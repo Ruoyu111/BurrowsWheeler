@@ -5,12 +5,14 @@ import edu.princeton.cs.algs4.BinaryStdOut;
 
 public class MoveToFront {
 
+    public static final int EXTENDED_ASCII = 256;
+
     // apply move-to-front encoding, reading from standard input and writing to
     // standard output
     public static void encode() {
 
         LinkedList<Character> chars = new LinkedList<>();
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < EXTENDED_ASCII; i++) {
             chars.add((char) i);
         }
 
@@ -21,7 +23,7 @@ public class MoveToFront {
 
             // move to front
             if (chars.indexOf(c) != 0) {
-                chars.remove(new Character(c));
+                chars.remove(c);
                 chars.addFirst(c);
             }
         }
@@ -32,7 +34,7 @@ public class MoveToFront {
     // standard output
     public static void decode() {
         LinkedList<Character> chars = new LinkedList<>();
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < EXTENDED_ASCII; i++) {
             chars.add((char) i);
         }
 

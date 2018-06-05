@@ -2,17 +2,16 @@ import java.util.Arrays;
 
 public class CircularSuffixArray {
 
-    private int[] index;
-    private int length;
-    private IndexString[] suffixes;
+    private final int[] index;
+    private final int length;
 
     private class IndexString implements Comparable<IndexString> {
         String str;
         int index;
 
         @Override
-        public int compareTo(IndexString o) {
-            return this.str.compareTo(o.str);
+        public int compareTo(IndexString indexString) {
+            return this.str.compareTo(indexString.str);
         }
     }
 
@@ -22,7 +21,7 @@ public class CircularSuffixArray {
             throw new IllegalArgumentException("argument is null");
         this.length = s.length();
         this.index = new int[this.length];
-        this.suffixes = new IndexString[this.length];
+        IndexString[] suffixes = new IndexString[this.length];
 
         char[] chars = (s + s).toCharArray();
         for (int i = 0; i < this.length; i++) {
