@@ -5,7 +5,7 @@ import edu.princeton.cs.algs4.BinaryStdOut;
 
 public class MoveToFront {
 
-    public static final int EXTENDED_ASCII = 256;
+    private static final int EXTENDED_ASCII = 256;
 
     // apply move-to-front encoding, reading from standard input and writing to
     // standard output
@@ -16,14 +16,16 @@ public class MoveToFront {
             chars.add((char) i);
         }
 
-        while (!BinaryStdIn.isEmpty()) {
+        char[] input = BinaryStdIn.readString().toCharArray();
+
+        for (char c : input) {
             // read char
-            char c = BinaryStdIn.readChar();
-            BinaryStdOut.write((char) chars.indexOf(c));
+            int index = chars.indexOf(c);
+            BinaryStdOut.write((char) index);
 
             // move to front
-            if (chars.indexOf(c) != 0) {
-                chars.remove(c);
+            if (index != 0) {
+                chars.remove(index);
                 chars.addFirst(c);
             }
         }
@@ -38,9 +40,9 @@ public class MoveToFront {
             chars.add((char) i);
         }
 
-        while (!BinaryStdIn.isEmpty()) {
-            // read integer
-            int index = BinaryStdIn.readChar();
+        char[] input = BinaryStdIn.readString().toCharArray();
+
+        for (char index : input) {
             char c = chars.get(index);
             BinaryStdOut.write(c);
 

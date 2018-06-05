@@ -1,19 +1,9 @@
-import java.util.Arrays;
-
 public class CircularSuffixArray {
+
+    private static final int R = 256;
 
     private final int[] index;
     private final int length;
-
-    private class IndexString implements Comparable<IndexString> {
-        String str;
-        int index;
-
-        @Override
-        public int compareTo(IndexString indexString) {
-            return this.str.compareTo(indexString.str);
-        }
-    }
 
     // circular suffix array of s
     public CircularSuffixArray(String s) {
@@ -21,21 +11,14 @@ public class CircularSuffixArray {
             throw new IllegalArgumentException("argument is null");
         this.length = s.length();
         this.index = new int[this.length];
-        IndexString[] suffixes = new IndexString[this.length];
 
-        char[] chars = (s + s).toCharArray();
         for (int i = 0; i < this.length; i++) {
-            IndexString is = new IndexString();
-            is.str = new String(chars, i, this.length);
-            is.index = i;
-            suffixes[i] = is;
+            index[i] = i;
         }
 
-        Arrays.sort(suffixes);
-
-        for (int c = 0; c < this.length; c++) {
-            index[c] = suffixes[c].index;
-        }
+        // MSD string sort suffixes
+        int[] aux = new int[this.length];
+        sort(s, index, 0, this.length - 1, 0, aux);
     }
 
     // length of s
@@ -50,9 +33,44 @@ public class CircularSuffixArray {
         return index[i];
     }
 
+    private void sort(String s, int[] index, int lo, int hi, int d, int[] aux) {
+
+        if (hi <= lo) {
+            return;
+        }
+
+        // compute frequency counts
+        int[] count = new int[R + 2];
+        for (int i = lo; i <= hi; i++) {
+            int c = s.charAt((index[i] + d) % this.length);
+            count[c + 2]++;
+        }
+
+        // transform counts to indicies
+        for (int r = 0; r < R + 1; r++) {
+            count[r + 1] += count[r];
+        }
+
+        // distribute
+        for (int i = lo; i <= hi; i++) {
+            int c = s.charAt((index[i] + d) % this.length);
+            aux[count[c + 1]++] = index[i];
+        }
+
+        // copy back
+        for (int i = lo; i <= hi; i++) {
+            index[i] = aux[i - lo];
+        }
+
+        // recursively sort for each character (excludes)
+        for (int r = 0; r < R; r++) {
+            sort(s, index, lo + count[r], lo + count[r + 1] - 1, d + 1, aux);
+        }
+    }
+
     // unit testing (required)
     public static void main(String[] args) {
-        String s = "ABRACADABRA!";
+        String s = "*************";
         CircularSuffixArray csa = new CircularSuffixArray(s);
         System.out.println("Length: " + csa.length());
         for (int i = 0; i < csa.length(); i++) {
