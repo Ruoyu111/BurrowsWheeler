@@ -41,6 +41,7 @@ public class BurrowsWheeler {
         char[] t = BinaryStdIn.readString().toCharArray();
         // head of Sorted Suffixes
         int len = t.length;
+        int[] next = new int[len];
 
         // Key-indexed sort t and get h
         // h is heading of each suffix
@@ -51,30 +52,14 @@ public class BurrowsWheeler {
             count[t[i] + 1]++;
         for (int r = 0; r < R; r++)
             count[r + 1] += count[r];
-        for (int i = 0; i < len; i++)
+        for (int i = 0; i < len; i++) {
+            next[count[t[i]]] = i;
             h[count[t[i]]++] = t[i];
+        }
 
         // debug
         // System.out.println("print t: "); for (char c : t) { System.out.println(c); }
         // System.out.println("print h: "); for (char c : h) { System.out.println(c); }
-
-        // build next array
-        int[] next = new int[len];
-        boolean[] marked = new boolean[len];
-
-        for (int i = 0; i < len; i++) {
-            for (int j = 0; j < len; j++) {
-                if (i == j)
-                    continue;
-                if (h[i] == t[j] && !marked[j]) {
-                    next[i] = j;
-                    marked[j] = true;
-                    break;
-                }
-            }
-        }
-
-        // debug
         // System.out.println("next array: "); for (int i = 0; i < len; i++) {
         // System.out.println("next[" + i + "] = " + next[i]); }
 

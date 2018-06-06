@@ -1,9 +1,8 @@
 public class CircularSuffixArray {
 
     private static final int CUTOFF = 15; // cutoff to insertion sort
-    private static final int R = 256;
 
-    private String s;
+    private final String s;
     private final int[] index;
     private final int length;
 
@@ -97,7 +96,7 @@ public class CircularSuffixArray {
 
     // unit testing (required)
     public static void main(String[] args) {
-        String s = "**************";
+        String s = "TJCKKOQTJCKKOQTJCKKOQTJCKKOQTJCKKOQ";
         CircularSuffixArray csa = new CircularSuffixArray(s);
         System.out.println("Length: " + csa.length());
         for (int i = 0; i < csa.length(); i++) {
