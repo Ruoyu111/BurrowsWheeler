@@ -1,7 +1,9 @@
 public class CircularSuffixArray {
 
+    private static final int CUTOFF = 15; // cutoff to insertion sort
     private static final int R = 256;
 
+    private String s;
     private final int[] index;
     private final int length;
 
@@ -9,6 +11,7 @@ public class CircularSuffixArray {
     public CircularSuffixArray(String s) {
         if (s == null)
             throw new IllegalArgumentException("argument is null");
+        this.s = s;
         this.length = s.length();
         this.index = new int[this.length];
 
@@ -16,9 +19,8 @@ public class CircularSuffixArray {
             index[i] = i;
         }
 
-        // MSD string sort suffixes
-        int[] aux = new int[this.length];
-        sort(s, index, 0, this.length - 1, 0, aux);
+        // 3-way string quick sort suffixes
+        sort(0, this.length - 1, 0);
     }
 
     // length of s
@@ -33,44 +35,69 @@ public class CircularSuffixArray {
         return index[i];
     }
 
-    private void sort(String s, int[] index, int lo, int hi, int d, int[] aux) {
+    // helper methods
+    private void sort(int lo, int hi, int d) {
 
-        if (hi <= lo) {
+        // cutoff to insertion sort for small subarrays
+        if (hi <= lo + CUTOFF) {
+            insertion(lo, hi, d);
             return;
         }
 
-        // compute frequency counts
-        int[] count = new int[R + 2];
+        int lt = lo, gt = hi;
+        int v = charAt(lo, d);
+        int i = lo + 1;
+        while (i <= gt) {
+            int t = charAt(i, d);
+            if (t < v)
+                exch(lt++, i++);
+            else if (t > v)
+                exch(i, gt--);
+            else
+                i++;
+        }
+
+        sort(lo, lt - 1, d);
+        if (v >= 0)
+            sort(lt, gt, d + 1);
+        sort(gt + 1, hi, d);
+    }
+
+    private int charAt(int i, int d) {
+        if (d == this.s.length())
+            return -1;
+        return this.s.charAt((this.index[i] + d) % this.length);
+    }
+
+    // exchange index[i] and index[j]
+    private void exch(int i, int j) {
+        int temp = this.index(i);
+        this.index[i] = this.index[j];
+        this.index[j] = temp;
+    }
+
+    // insertion sort
+    private void insertion(int lo, int hi, int d) {
         for (int i = lo; i <= hi; i++) {
-            int c = s.charAt((index[i] + d) % this.length);
-            count[c + 2]++;
+            for (int j = i; j > lo && less(j, j - 1, d); j--) {
+                exch(j, j - 1);
+            }
         }
+    }
 
-        // transform counts to indicies
-        for (int r = 0; r < R + 1; r++) {
-            count[r + 1] += count[r];
+    private boolean less(int i, int j, int d) {
+        for (int m = 0; m < length; m++) {
+            if (charAt(i, d + m) < charAt(j, d + m))
+                return true;
+            if (charAt(i, d + m) > charAt(j, d + m))
+                return false;
         }
-
-        // distribute
-        for (int i = lo; i <= hi; i++) {
-            int c = s.charAt((index[i] + d) % this.length);
-            aux[count[c + 1]++] = index[i];
-        }
-
-        // copy back
-        for (int i = lo; i <= hi; i++) {
-            index[i] = aux[i - lo];
-        }
-
-        // recursively sort for each character (excludes)
-        for (int r = 0; r < R; r++) {
-            sort(s, index, lo + count[r], lo + count[r + 1] - 1, d + 1, aux);
-        }
+        return false;
     }
 
     // unit testing (required)
     public static void main(String[] args) {
-        String s = "*************";
+        String s = "**************";
         CircularSuffixArray csa = new CircularSuffixArray(s);
         System.out.println("Length: " + csa.length());
         for (int i = 0; i < csa.length(); i++) {
